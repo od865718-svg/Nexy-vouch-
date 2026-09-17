@@ -14,7 +14,7 @@ load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
 GUILD_ID = int(os.getenv("GUILD_ID", "1547715438396444742"))
 VOUCH_CHANNEL_ID = 1547715439700746265
-CUSTOMER_ROLE_NAME = "Customer"
+CUSTOMER_ROLE_ID = 1547715438396444750
 BANNER_URL = "https://cdn.discordapp.com/attachments/1547715439700746268/1548155496039710801/banner.png?ex=6aab4da9&is=6aa9fc29&hm=b3aa71736562c9def56ee6b44522a9d003dd3a1e0ffacaf9c80c86b9ef2352c0&"
 
 # ==================== STATE ====================
@@ -24,7 +24,7 @@ reminder_message_id = None
 
 # ==================== HELPERS ====================
 def has_customer_role(member: discord.Member) -> bool:
-    return any(role.name == CUSTOMER_ROLE_NAME for role in member.roles)
+    return any(role.id == CUSTOMER_ROLE_ID for role in member.roles)
 
 def load_vouch_data():
     global vouch_counter
