@@ -91,12 +91,22 @@ class VouchModal(ui.Modal, title="Leave a Vouch"):
             title="New vouch created!",
             color=discord.Color.gold()
         )
-        embed.set_thumbnail(url=interaction.user.avatar.url if interaction.user.avatar else "")
+        
+        # Add stars field
         embed.add_field(name=stars_display, value="", inline=False)
+        
+        # Add vouch text
         embed.add_field(name="Vouch:", value=self.vouch_text.value, inline=False)
+        
+        # Add details in one row
         embed.add_field(name="Vouch Nº:", value=str(vouch_counter), inline=True)
         embed.add_field(name="Vouched by:", value=interaction.user.mention, inline=True)
-        embed.add_field(name="Vouched at:", value=datetime.now().strftime('%Y-%m-%d %H:%M:%S'), inline=False)
+        embed.add_field(name="Vouched at:", value=datetime.now().strftime('%Y-%m-%d %H:%M:%S'), inline=True)
+        
+        # Add user avatar on right
+        if interaction.user.avatar:
+            embed.set_thumbnail(url=interaction.user.avatar.url)
+        
         embed.set_footer(text="Service provided by Nexy")
         
         await vouch_ch.send(embed=embed)
@@ -183,12 +193,6 @@ async def reminder_task():
             
             msg = await vouch_ch.send(embed=embed)
             reminder_message_id = msg.id
-            
-            # Try to pin (optional, might need permissions)
-            try:
-                await msg.pin()
-            except:
-                pass
     except Exception as e:
         print(f"Reminder task error: {e}")
 
