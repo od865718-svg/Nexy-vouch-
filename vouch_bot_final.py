@@ -48,6 +48,30 @@ async def get_vouch_channel(guild):
     except:
         return None
 
+async def post_reminder(guild, vouch_ch):
+    """Delete old reminder and post new one"""
+    global reminder_message_id
+    
+    # Delete old reminder
+    if reminder_message_id:
+        try:
+            old_msg = await vouch_ch.fetch_message(reminder_message_id)
+            await old_msg.delete()
+        except:
+            pass
+    
+    # Send new reminder
+    embed = discord.Embed(
+        title="📋 Leave a Vouch!",
+        description="Use `/vouch` to share your experience with Nexy services!\n\nYour feedback helps the community!",
+        color=discord.Color.blurple()
+    )
+    embed.set_image(url=BANNER_URL)
+    embed.set_footer(text="Powered by Nexy")
+    
+    msg = await vouch_ch.send(embed=embed)
+    reminder_message_id = msg.id
+
 # ==================== MODAL ====================
 class VouchModal(ui.Modal, title="Leave a Vouch"):
     stars = ui.TextInput(
@@ -110,6 +134,10 @@ class VouchModal(ui.Modal, title="Leave a Vouch"):
         embed.set_footer(text="Service provided by Nexy")
         
         await vouch_ch.send(embed=embed)
+        
+        # Delete old reminder and post new one
+        await post_reminder(guild, vouch_ch)
+        
         await interaction.response.send_message("✅ Vouch posted!", ephemeral=True)
 
 # ==================== BOT SETUP ====================
@@ -172,27 +200,7 @@ async def reminder_task():
             if not vouch_ch:
                 continue
             
-            global reminder_message_id
-            
-            # Delete old reminder
-            if reminder_message_id:
-                try:
-                    old_msg = await vouch_ch.fetch_message(reminder_message_id)
-                    await old_msg.delete()
-                except:
-                    pass
-            
-            # Send new reminder
-            embed = discord.Embed(
-                title="📋 Leave a Vouch!",
-                description="Use `/vouch` to share your experience with Nexy services!\n\nYour feedback helps the community!",
-                color=discord.Color.blurple()
-            )
-            embed.set_image(url=BANNER_URL)
-            embed.set_footer(text="Powered by Nexy")
-            
-            msg = await vouch_ch.send(embed=embed)
-            reminder_message_id = msg.id
+            await post_reminder(guild, vouch_ch)
     except Exception as e:
         print(f"Reminder task error: {e}")
 
